@@ -64,8 +64,8 @@ def retrieve_drinks():
 # @requires_auth('get:drinks-details')
 def retrieve_drinks_details():
     drinks = Drink.query.all()
+
     drinks = [drink.long() for drink in drinks]
-    print(drinks)
 
     if len(drinks) == 0:
         abort(404)
@@ -99,7 +99,9 @@ def add_drink():
 
         title = body.get("req_title", None)
         recipe = body.get("req_recipe", None)
-        drink = Drink(title=title, recipe=recipe)
+
+        drink = Drink(title=title,
+                      recipe=json.dumps(recipe))
         drink.insert()
 
         return jsonify(
@@ -137,7 +139,7 @@ def edit_drink(id):
         recipe = body.get("req_recipe", None)
         drink = Drink.query.filter(Drink.id == id).one_or_none()
         drink.title = title
-        drink.recipe = recipe
+        drink.recipe = json.dumps(recipe)
         drink.update()
 
         return jsonify(
@@ -163,10 +165,9 @@ def edit_drink(id):
         or appropriate status code indicating reason for failure
 '''
 
-app.route('/drinks/<int:id>', methods=['DELETE'])
+
+@app.route('/drinks/<int:id>', methods=['DELETE'])
 # @requires_auth('delete:drinks')
-
-
 def delete_drink(id):
     try:
         drink = Drink.query.filter(Drink.id == id).one_or_none()
