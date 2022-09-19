@@ -26,7 +26,7 @@ CORS(app)
 
 @app.route('/drinks')
 @requires_auth('get:drinks')
-def retrieve_drinks():
+def retrieve_drinks(payload):
     drinks = Drink.query.all()
     drinks = [drink.short() for drink in drinks]
 
@@ -44,9 +44,9 @@ def retrieve_drinks():
 
 # Get dring details
 
-@app.route('/drinks-details')
-@requires_auth('get:drinks-details')
-def retrieve_drinks_details():
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def retrieve_drinks_detail(payload):
     drinks = Drink.query.all()
 
     drinks = [drink.long() for drink in drinks]
@@ -67,13 +67,13 @@ def retrieve_drinks_details():
 
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def add_drink():
+def add_drink(payload):
     try:
 
         body = request.get_json()
 
-        title = body.get("req_title", None)
-        recipe = body.get("req_recipe", None)
+        title = body.get("title", None)
+        recipe = body.get("recipe", None)
 
         drink = Drink(title=title,
                       recipe=json.dumps(recipe))
@@ -96,11 +96,11 @@ def add_drink():
 
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def edit_drink(id):
+def edit_drink(payload, id):
     try:
         body = request.get_json()
-        title = body.get("req_title", None)
-        recipe = body.get("req_recipe", None)
+        title = body.get("title", None)
+        recipe = body.get("recipe", None)
         drink = Drink.query.filter(Drink.id == id).one_or_none()
         drink.title = title
         drink.recipe = json.dumps(recipe)
@@ -122,7 +122,7 @@ def edit_drink(id):
 
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(id):
+def delete_drink(payload, id):
     try:
         drink = Drink.query.filter(Drink.id == id).one_or_none()
         drink.delete()
