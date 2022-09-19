@@ -30,9 +30,6 @@ def retrieve_drinks(payload):
     drinks = Drink.query.all()
     drinks = [drink.short() for drink in drinks]
 
-    if len(drinks) == 0:
-        abort(404)
-
     return jsonify(
         {
             "success": True,
@@ -50,9 +47,6 @@ def retrieve_drinks_detail(payload):
     drinks = Drink.query.all()
 
     drinks = [drink.long() for drink in drinks]
-
-    if len(drinks) == 0:
-        abort(404)
 
     return jsonify(
         {
