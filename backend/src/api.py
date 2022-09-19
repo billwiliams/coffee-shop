@@ -25,18 +25,17 @@ CORS(app)
 
 
 @app.route('/drinks')
-@requires_auth('get:drinks')
-def retrieve_drinks(payload):
+def retrieve_drinks():
     drinks = Drink.query.all()
     drinks = [drink.short() for drink in drinks]
 
     return jsonify(
         {
             "success": True,
-            "drinks": drinks,
+            "drinks": drinks
 
         }
-    )
+    ), 200
 
 
 # Get dring details
@@ -51,10 +50,10 @@ def retrieve_drinks_detail(payload):
     return jsonify(
         {
             "success": True,
-            "drinks": drinks,
+            "drinks": drinks
 
         }
-    )
+    ), 200
 
 
 # Create a drink
@@ -82,7 +81,7 @@ def add_drink(payload):
         )
 
     except:
-        print(sys.exc_info())
+
         abort(422)
 
 # Update a Drink
@@ -103,7 +102,7 @@ def edit_drink(payload, id):
         return jsonify(
             {
                 "success": True,
-                "drink": drink.long(),
+                "drink": [drink.long()],
 
             }
         )
@@ -212,14 +211,12 @@ def bad_request(error):
 
 
 @app.errorhandler(AuthError)
-def handle_exception(e):
+def handle_exception(error):
     """Return JSON instead of HTML for HTTP errors."""
     # replace the body with JSON
-    response = jsonify({
+    return jsonify({
         "success": False,
-        "error": e.status_code,
-        "message": e.error['code'],
-        "description": e.error['description'],
+        "error": error.status_code,
+        "message": error.error['description']
 
-    })
-    return response
+    }), error.status_code
