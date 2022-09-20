@@ -24,7 +24,7 @@ CORS(app)
 # ROUTES
 
 
-@app.route('/drinks')
+@app.route('/drinks', methods=['GET'])
 def retrieve_drinks():
     drinks = Drink.query.all()
     drinks = [drink.short() for drink in drinks]
@@ -75,10 +75,10 @@ def add_drink(payload):
         return jsonify(
             {
                 "success": True,
-                "code": 201,
+
 
             }
-        )
+        ), 200
 
     except:
 
